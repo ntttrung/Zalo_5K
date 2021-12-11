@@ -33,18 +33,20 @@ from utils.general import (LOGGER, check_file, check_img_size, check_imshow, che
                            increment_path, non_max_suppression, print_args, scale_coords, strip_optimizer, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
-
+import os
+import pandas as pd
 
 @torch.no_grad()
-def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
-        source=ROOT / 'data/images',  # file/dir/URL/glob, 0 for webcam
+def run(weights,  # model.pt path(s)
+        source,
+        path_csv,# file/dir/URL/glob, 0 for webcam
         imgsz=640,  # inference size (pixels)
-        conf_thres=0.25,  # confidence threshold
+        conf_thres=0.4,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
         max_det=1000,  # maximum detections per image
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         view_img=False,  # show results
-        save_txt=False,  # save results to *.txt
+        save_txt=True,  # save results to *.txt
         save_conf=False,  # save confidences in --save-txt labels
         save_crop=False,  # save cropped prediction boxes
         nosave=False,  # do not save images/videos
@@ -96,9 +98,10 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         bs = 1  # batch_size
     vid_path, vid_writer = [None] * bs, [None] * bs
 
-    # Run inference
-    model.warmup(imgsz=(1, 3, *imgsz), half=half)  # warmup
     dt, seen = [0.0, 0.0, 0.0], 0
+    mask = []
+    ids = []
+    fnames = []
     for path, im, im0s, vid_cap, s in dataset:
         t1 = time_sync()
         im = torch.from_numpy(im).to(device)
@@ -112,6 +115,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         # Inference
         visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
         pred = model(im, augment=augment, visualize=visualize)
+
+
         t3 = time_sync()
         dt[1] += t3 - t2
 
@@ -121,6 +126,20 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
         # Second-stage classifier (optional)
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
+
+        sum_check = 0
+        name = os.path.basename(path)
+        id = name.split('.')[0]
+        fnames.append(name)
+        ids.append(int(id))
+
+        for res in pred[0]:
+            sum_check += res[5]
+
+        if sum_check == 0:
+            mask.append(1)
+        else:
+            mask.append(0)
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
@@ -192,7 +211,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
-    LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}' % t)
+    #LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}' % t)
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
@@ -200,12 +219,19 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
 
 
+    df = pd.DataFrame({'image_id': ids,
+                       'fname': fnames,
+                       '5K': mask})
+    df.sort_values(by=['image_id'])
+    df.to_csv(path_csv)
+
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path(s)')
+    parser.add_argument('--path_csv', nargs='+', type=str, default="./results/submission.csv", help='submission.csv path(s)')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
-    parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
+    parser.add_argument('--conf-thres', type=float, default=0.4, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -240,4 +266,8 @@ def main(opt):
 
 if __name__ == "__main__":
     opt = parse_opt()
-    main(opt)
+
+    weights = r"D:\FPT_Project\Zalo5k\yolov5\full_data.pt"
+    source = r"C:\Users\nguye\Downloads\zalo\5k\test\images"
+    path_csv = "test.csv"
+    run(weights = weights, source = source, path_csv = path_csv)
