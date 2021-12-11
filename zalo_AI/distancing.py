@@ -95,6 +95,8 @@ def compute_distancing(label):
                 break
         
     print(count)
+    df.loc[df['Distancing'] == 0, ['5K']] = 0
+    df.loc[df['mask'] == 0, ['5K']] = 0
     df.to_csv(r"C:\NTT\Zalo_5K\result\submission.csv", index=False)
 
 label = r"C:\Users\trung\Downloads\zalo_AI\exp1\labels"
