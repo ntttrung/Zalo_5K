@@ -55,6 +55,7 @@ def real_distance(ls1, ls2, max_area):
     x2 = calculateCentroid(ls2)
     ratio = (ratio_area(ls1, ls2, max_area))
     return ratio**2 * (compute_distance(x1, x2)) 
+
 count = 0
 df = pd.read_csv(r".\new_data.csv")
 for path in list_path:
@@ -110,8 +111,8 @@ for path in list_path:
         threshold_1 = abs(ls[i[0]][1] - ls[i[0]][3]) + abs(ls[i[1]][1] - ls[i[1]][3])
         rate_1 = compute_area(ls[i[0]])/max_area
         rate_2 = compute_area(ls[i[1]])/max_area
-        # print(i, int(dis), int(threshold), threshold_1, rate_1, rate_2)
-        # print("----------------")
+        print(i, int(dis), int(threshold), threshold_1, rate_1, rate_2)
+        print("----------------")
         if dis < threshold*1.6 and dis_2 > 23 and (rate_1 > 0.37 and rate_2 > 0.37):
             # print(i, int(dis), threshold*1.6, rate_1)
             # start = tuple(calculateCentroid(ls[i[0]]))
