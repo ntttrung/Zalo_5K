@@ -228,7 +228,7 @@ def run(weights,  # model.pt path(s)
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path(s)')
-    parser.add_argument('--path_csv', nargs='+', type=str, default="./results/submission.csv", help='submission.csv path(s)')
+    parser.add_argument('--path_csv', nargs='+', type=str, default="./results/submission.csv", help='submission_test.csv path(s)')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.4, help='confidence threshold')
@@ -266,8 +266,4 @@ def main(opt):
 
 if __name__ == "__main__":
     opt = parse_opt()
-
-    weights = r"D:\FPT_Project\Zalo5k\yolov5\full_data.pt"
-    source = r"C:\Users\nguye\Downloads\zalo\5k\test\images"
-    path_csv = "test.csv"
-    run(weights = weights, source = source, path_csv = path_csv)
+    main(opt)
