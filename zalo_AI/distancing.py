@@ -86,8 +86,6 @@ def compute_distancing(label):
             threshold_1 = abs(ls[i[0]][1] - ls[i[0]][3]) + abs(ls[i[1]][1] - ls[i[1]][3])
             rate_1 = compute_area(ls[i[0]])/max_area
             rate_2 = compute_area(ls[i[1]])/max_area
-            # print(i, int(dis), int(threshold), threshold_1, rate_1, rate_2)
-            # print("----------------")
             if dis < threshold*1.6 and dis_2 > 23 and (rate_1 > 0.37 and rate_2 > 0.37):
 
                 df.loc[df['fname'] == name.replace("txt","jpg"), ['Distancing']] = 0
@@ -99,5 +97,7 @@ def compute_distancing(label):
     df.loc[df['mask'] == 0, ['5K']] = 0
     df.to_csv(r"C:\NTT\Zalo_5K\result\submission.csv", index=False)
 
-label = r"C:\Users\trung\Downloads\zalo_AI\exp1\labels"
-compute_distancing(label)
+
+if __name__ == "__main__":
+    label = r"C:\Users\trung\Downloads\zalo_AI\exp1\labels"
+    compute_distancing(label)
