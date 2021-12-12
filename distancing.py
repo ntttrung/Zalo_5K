@@ -6,6 +6,7 @@ import os
 import numpy as np  
 import math
 import itertools  
+import  sys
 
 
 def compute_distance(cor1, cor2):
@@ -103,5 +104,5 @@ def compute_distancing(path_image):
 
 if __name__ == "__main__":
     # label = r"C:\Users\trung\Downloads\zalo_AI\exp1\labels"
-    path_image = '/home/administrator/Documents/Zalo_5K-main/data/images'
+    path_image = sys.argv[1]
     compute_distancing(path_image)
