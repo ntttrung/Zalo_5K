@@ -49,7 +49,7 @@ import pandas as pd
 @torch.no_grad()
 def run(weights,  # model.pt path(s)
         source,
-        path_csv,# file/dir/URL/glob, 0 for webcam
+        path_csv="./result/submission.csv",# file/dir/URL/glob, 0 for webcam
         imgsz=640,  # inference size (pixels)
         conf_thres=0.4,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
@@ -228,18 +228,21 @@ def run(weights,  # model.pt path(s)
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
 
+    temp = [1 for f in range(len(mask))]
 
     df = pd.DataFrame({'image_id': ids,
                        'fname': fnames,
-                       '5K': mask})
+                       '5K': mask,
+                       'mask': mask,
+                       'Distancing': temp})
+
     df.sort_values(by=['image_id'])
     df.to_csv(path_csv)
     compute_distancing(source)
-
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path(s)')
-    parser.add_argument('--path_csv', nargs='+', type=str, default="./results/submission.csv", help='submission_test.csv path(s)')
+    parser.add_argument('--path_csv', nargs='+', type=str, default="./result/submission.csv", help='submission_test.csv path(s)')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.4, help='confidence threshold')

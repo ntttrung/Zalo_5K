@@ -1,2 +1,2 @@
 #!/bin/bash
-python detect.py --source ./data --weights ./runs/train/exp36/weights/best.pt --save-txt
+python3 detect.py --weights .saved_model/full_data.pt --source data/images --conf 0.4 --save-txt
