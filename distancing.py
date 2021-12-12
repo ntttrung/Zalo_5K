@@ -34,24 +34,24 @@ def real_distance(ls1, ls2, max_area):
     ratio = (ratio_area(ls1, ls2, max_area))
     return ratio**2 * (compute_distance(x1, x2)) 
 
-def compute_distancing():
-    label = max(glob.glob(os.path.join(r".\runs\detect", '*/')), key=os.path.getmtime)
-    df = pd.read_csv(r".\submission.csv")
+def compute_distancing(path_image):
+    label = max(glob.glob(os.path.join('./runs/detect', '*/')), key=os.path.getmtime)
+    df = pd.read_csv("./submission.csv")
     APS = 1300 * 1600
-    source = r'C:\Users\trung\Downloads\AI_zalo_5K\public_test\images'
-    print(label)
-    list_path = glob.glob(label+ r'labels\*.txt')
-    print(list_path)
+    source = path_image
+    # source = r'C:\Users\trung\Downloads\AI_zalo_5K\public_test\im
+    list_path = glob.glob(label+ 'labels/*.txt')
     count = 0
     for path in list_path:
         name = os.path.basename(path)
         ind  = list_path.index(path)
-        path_image = join(source, name.replace("txt","jpg"))
+        path_image = os.path.join(source, name.replace("txt","jpg"))
         img = cv2.imread(path_image)
+        # print(path_image)
         # img = cv2.resize(img, (800,800))
         dh, dw, _ = img.shape
         ra = math.sqrt(dh*dw/APS)
-        fl = open(join(label, name), 'r')
+        fl = open(os.path.join(label + 'labels/', name), 'r')
         data = fl.readlines()
         fl.close()
         ls = []
@@ -98,9 +98,10 @@ def compute_distancing():
     print(count)
     df.loc[df['Distancing'] == 0, ['5K']] = 0
     df.loc[df['mask'] == 0, ['5K']] = 0
-    df.to_csv(r".\result\submission.csv", index=False)
+    df.to_csv("./result/submission.csv", index=False)
 
 
 if __name__ == "__main__":
     # label = r"C:\Users\trung\Downloads\zalo_AI\exp1\labels"
-    compute_distancing()
+    path_image = '/home/administrator/Documents/Zalo_5K-main/data/images'
+    compute_distancing(path_image)
