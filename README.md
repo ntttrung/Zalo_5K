@@ -9,7 +9,7 @@ sh train.sh
 # Inference
 
 ```bash
-sudo docker run --gpus all -v []:/data -v []:/results [images id] /bin/bash /model/predict.sh
+sudo docker run --gpus all -v [path to test data]:/data -v [curent dỉ]:/results [images id/docker name] /bin/bash /model/predict.sh
 ```
 
 Example
