@@ -37,7 +37,8 @@ def real_distance(ls1, ls2, max_area):
 
 def compute_distancing(path_image):
     label = max(glob.glob(os.path.join('./runs/detect', '*/')), key=os.path.getmtime)
-    df = pd.read_csv("./submission.csv")
+    path_csv =  max(glob.glob('./result/*'), key=os.path.getmtime)
+    df = pd.read_csv(path_csv)
     APS = 1300 * 1600
     source = path_image
     # source = r'C:\Users\trung\Downloads\AI_zalo_5K\public_test\im
